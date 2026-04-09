@@ -1,0 +1,24 @@
+services:
+  chrome:
+    image: browserless/chrome:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - MAX_CONCURRENT_SESSIONS=3
+      - MAX_QUEUE_LENGTH=10
+      - PREBOOT_CHROME=true
+      - CONNECTION_TIMEOUT=60000
+      # Токен для защиты от чужих запросов — смените на свой
+      - TOKEN=ЗАМЕНИТЕ_НА_СВОЙ_ТОКЕН
+    shm_size: "2gb"
+
+  scraper:
+    build: .
+    restart: "no"
+    depends_on:
+      - chrome
+    environment:
+      - CHROME_WS_URL=ws://chrome:3000?token=ЗАМЕНИТЕ_НА_СВОЙ_ТОКЕН
+    volumes:
+      - ./output:/app/output
